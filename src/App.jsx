@@ -9,6 +9,7 @@ import Orders from './pages/Orders'
 import Supplier from './pages/Supplier'
 import Products from './pages/Products'
 import Billing from './pages/Billing'
+import EditProduct from './pages/EditProduct'
 
 function App() {
   const [count, setCount] = useState(0)
@@ -22,6 +23,7 @@ function App() {
           <Route path="/orders" element={<Orders />} />
           <Route path="/uploader-settings" element={<Supplier />} />
           <Route path="/products" element={<Products />} />
+          <Route path="/edit-product/:id" element={<EditProduct />} />
           <Route path="/billing" element={<Billing />} />
         </Routes>
       </div>
