@@ -6,9 +6,10 @@ import { useGet } from '../api/useGet';
 const EditProduct = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  console.log(id);
   const { putData, loading: updating, error: updateError } = usePut();
-  const { data: fetchedProduct, loading: fetching, error: fetchError } = useGet(`/products/${id}`);
-
+  const { data: fetchedProduct, loading: fetching, error: fetchError } = useGet(`products/${id}`);
+console.log(fetchedProduct);
   const [product, setProduct] = useState({
     title: '',
     descriptionImages: [],
@@ -32,7 +33,7 @@ const EditProduct = () => {
     e.preventDefault();
     
     try {
-      await putData(`/products/${id}`, product);
+      await putData(`products/${id}`, product);
       navigate('/products');
     } catch (err) {
       console.error('Failed to update product:', err);
