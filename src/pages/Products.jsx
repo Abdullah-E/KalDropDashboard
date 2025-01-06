@@ -1,39 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { useGet } from '../api/useGet';
 
 const Products = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
-  // Base API URL
-  const API_BASE_URL = "http://localhost:3000/api/v1"; // Replace with your actual BASE_PATH if needed
-
-  useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-      const userId = "a077e5a3-d54f-4c81-9d7e-d42465873881"; // Replace with actual user ID
-      const response = await fetch(`${API_BASE_URL}/user/${userId}/products`);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      const data = await response.json();
-      setProducts(data); // Set products data
-      } catch (err) {
-      setError(err.message);
-      } finally {
-      setLoading(false);
-      }
-    };
-
-    fetchProducts();
-  }, []);
+  const { data: products, loading, error } = useGet('products');
 
   return (
     <div className="m-auto p-8 bg-gray-100 min-h-screen w-2/4">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">My Products</h1>
       <p className="text-gray-600 mb-6">View and manage your products.</p>
 
-      {/* Filter & Actions */}
       <div className="flex justify-between items-center mb-4">
         <div className="flex space-x-4">
           <input
@@ -55,7 +30,6 @@ const Products = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="bg-white shadow rounded-lg overflow-hidden">
         {loading ? (
           <p className="text-center py-6">Loading products...</p>
@@ -74,7 +48,7 @@ const Products = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {products.map((product, index) => (
+              {products?.map((product, index) => (
                 <tr key={product.id || index}>
                   <td className="px-4 py-3">{product.id}</td>
                   <td className="px-4 py-3">{product.name}</td>

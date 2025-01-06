@@ -1,139 +1,232 @@
-import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { usePut } from '../api/usePut';
+import { useGet } from '../api/useGet';
 
 const EditProduct = () => {
-  const { id } = useParams(); // Get the product ID from the URL
   const navigate = useNavigate();
+  const { id } = useParams();
+  const { putData, loading: updating, error: updateError } = usePut();
+  const { data: fetchedProduct, loading: fetching, error: fetchError } = useGet(`/products/${id}`);
 
   const [product, setProduct] = useState({
-    name: "",
-    price: "",
-    url: "",
+    title: '',
+    descriptionImages: [],
+    images: [],
+    price: 0,
+    url: '',
+    originalPrice: 0,
+    sellingPrice: 0,
+    specifications: {},
+    variants: []
   });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [saving, setSaving] = useState(false);
 
-  const API_BASE_URL = "http://localhost:3000/api/v1"; // Replace with your actual BASE_PATH if needed
-
-  // Fetch product details when the component mounts
+  // Update form when product data is fetched
   useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${API_BASE_URL}/products/${id}`);
-        if (response.data.length > 0) {
-          setProduct(response.data[0]); // Assuming the API returns an array with one product
-        } else {
-          throw new Error("Product not found");
-        }
-      } catch (err) {
-        setError(err.response?.data?.message || "Error fetching product");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (fetchedProduct) {
+      setProduct(fetchedProduct);
+    }
+  }, [fetchedProduct]);
 
-    fetchProduct();
-  }, [id]);
-
-  // Handle form submission to update the product
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     try {
-      setSaving(true);
-      await axios.put(`${API_BASE_URL}/products/${id}`, {
-        name: product.name,
-        price: product.price,
-        url: product.url,
-      });
-      navigate("/products"); // Redirect to the products list after saving
+      await putData(`/products/${id}`, product);
+      navigate('/products');
     } catch (err) {
-      setError(err.response?.data?.message || "Error updating product");
-    } finally {
-      setSaving(false);
+      console.error('Failed to update product:', err);
     }
   };
 
-  // Handle input field changes
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      [name]: value,
+    setProduct(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
-  return (
-    <div className="m-auto p-8 bg-gray-100 min-h-screen w-2/4">
-      <h1 className="text-3xl font-bold text-gray-800 mb-2">Edit Product</h1>
-      <p className="text-gray-600 mb-6">Modify product details below.</p>
+  const handleArrayInputChange = (name, value, index) => {
+    setProduct(prev => ({
+      ...prev,
+      [name]: prev[name].map((item, i) => i === index ? value : item)
+    }));
+  };
 
-      {loading ? (
-        <p className="text-center py-6">Loading product...</p>
-      ) : error ? (
-        <p className="text-center text-red-500 py-6">Error: {error}</p>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name */}
+  if (fetching) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-lg">Loading product...</p>
+      </div>
+    );
+  }
+
+  if (fetchError || updateError) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <p className="text-red-500">Error: {fetchError || updateError}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Edit Product</h1>
+      
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Basic Information */}
+        <div className="space-y-4">
           <div>
-            <label className="block text-gray-700">Name</label>
+            <label className="block text-sm font-medium text-gray-700">Title</label>
             <input
               type="text"
-              name="name"
-              value={product.name}
+              name="title"
+              value={product.title}
               onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
             />
           </div>
 
-          {/* Price */}
           <div>
-            <label className="block text-gray-700">Price</label>
-            <input
-              type="number"
-              name="price"
-              value={product.price}
-              onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              required
-            />
-          </div>
-
-          {/* URL */}
-          <div>
-            <label className="block text-gray-700">URL</label>
+            <label className="block text-sm font-medium text-gray-700">URL</label>
             <input
               type="url"
               name="url"
               value={product.url}
               onChange={handleInputChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
               required
             />
           </div>
 
-          {/* Submit and Cancel Buttons */}
+          {/* Prices */}
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Price</label>
+              <input
+                type="number"
+                name="price"
+                value={product.price}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Original Price</label>
+              <input
+                type="number"
+                name="originalPrice"
+                value={product.originalPrice}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Selling Price</label>
+              <input
+                type="number"
+                name="sellingPrice"
+                value={product.sellingPrice}
+                onChange={handleInputChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          {/* Images */}
           <div>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 disabled:opacity-50"
-            >
-              {saving ? "Saving..." : "Save Changes"}
-            </button>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Images</label>
+            {product.images.map((image, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={image}
+                  onChange={(e) => handleArrayInputChange('images', e.target.value, index)}
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setProduct(prev => ({
+                    ...prev,
+                    images: prev.images.filter((_, i) => i !== index)
+                  }))}
+                  className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
             <button
               type="button"
-              onClick={() => navigate("/products")}
-              className="ml-4 px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300"
+              onClick={() => setProduct(prev => ({
+                ...prev,
+                images: [...prev.images, '']
+              }))}
+              className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
             >
-              Cancel
+              Add Image
             </button>
           </div>
-        </form>
-      )}
+
+          {/* Description Images */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Description Images</label>
+            {product.descriptionImages.map((image, index) => (
+              <div key={index} className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  value={image}
+                  onChange={(e) => handleArrayInputChange('descriptionImages', e.target.value, index)}
+                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                />
+                <button
+                  type="button"
+                  onClick={() => setProduct(prev => ({
+                    ...prev,
+                    descriptionImages: prev.descriptionImages.filter((_, i) => i !== index)
+                  }))}
+                  className="px-3 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              onClick={() => setProduct(prev => ({
+                ...prev,
+                descriptionImages: [...prev.descriptionImages, '']
+              }))}
+              className="mt-2 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+            >
+              Add Description Image
+            </button>
+          </div>
+        </div>
+
+        {/* Submit Buttons */}
+        <div className="flex gap-4">
+          <button
+            type="submit"
+            disabled={updating}
+            className="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50"
+          >
+            {updating ? 'Saving...' : 'Save Changes'}
+          </button>
+          <button
+            type="button"
+            onClick={() => navigate('/products')}
+            className="px-6 py-3 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300"
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
   );
 };
