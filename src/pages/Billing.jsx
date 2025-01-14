@@ -1,6 +1,7 @@
 import React from 'react';
 import { CalendarDays, CheckCircle, AlertCircle } from 'lucide-react';
 import { initializePaddle } from '@paddle/paddle-js';
+import { getLoggedInUser } from '../providers/supabaseAuth';
 
 const Billing = () => {
   // This would come from your auth/subscription state management
@@ -20,6 +21,8 @@ const Billing = () => {
   }, []);
 
   const handleSubscribe = async () => {
+    const {id:userId} = await getLoggedInUser();
+    
     setLoading(true);
     try {
       await paddle?.Checkout.open({
@@ -27,6 +30,9 @@ const Billing = () => {
           priceId: 'pri_01jh3jt10jsrm4p020wgbhesq2', 
           quantity: 1 
         }],
+        customData:{
+          userId,
+        }
       });
     } catch (error) {
       console.error('Subscription failed:', error);
