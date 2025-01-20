@@ -1,13 +1,20 @@
 import React from 'react';
 import { CalendarDays, CheckCircle, AlertCircle } from 'lucide-react';
 import { initializePaddle } from '@paddle/paddle-js';
-import { getLoggedInUser } from '../providers/supabaseAuth';
+import { useGet } from '../api/useGet';
+import { useUser } from '../Components/ProtectedRoute';
 
 const Billing = () => {
-  // This would come from your auth/subscription state management
-  const [isSubscribed, setIsSubscribed] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [paddle, setPaddle] = React.useState();
+  const user = useUser();
+  console.log('User:', user);
+  
+  const { data: subscription, loading: subscriptionLoading } = useGet(
+    user?.id ? `user-subscription?id=${user.id}` : null
+  );
+
+  const isSubscribed = subscription && subscription.status === 'active';
 
   React.useEffect(() => {
     initializePaddle({ 
@@ -21,7 +28,8 @@ const Billing = () => {
   }, []);
 
   const handleSubscribe = async () => {
-    const {id:userId} = await getLoggedInUser();
+    console.log('Subscribing user:', user);
+    if (!user?.id) return;
     
     setLoading(true);
     try {
@@ -30,8 +38,8 @@ const Billing = () => {
           priceId: 'pri_01jh3jt10jsrm4p020wgbhesq2', 
           quantity: 1 
         }],
-        customData:{
-          userId,
+        customData: {
+          userId: user.id,
         }
       });
     } catch (error) {
@@ -40,7 +48,25 @@ const Billing = () => {
       setLoading(false);
     }
   };
-  
+
+  if (subscriptionLoading) {
+    return (
+      <div className="max-w-3xl mx-auto p-8">
+        <div className="min-h-[400px] flex items-center justify-center">
+          <p className="text-gray-600">Loading subscription information...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
 
   return (
     <div className="max-w-3xl mx-auto p-8">
@@ -65,30 +91,32 @@ const Billing = () => {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Plan</p>
-                  <p className="text-base font-medium">{subscriptionData.plan}</p>
+                  <p className="text-base font-medium">Pro Plan</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-gray-500">Price</p>
-                  <p className="text-base font-medium">${subscriptionData.price}/month</p>
+                  <p className="text-sm font-medium text-gray-500">Status</p>
+                  <p className="text-base font-medium capitalize">{subscription?.status}</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Started On</p>
                   <div className="flex items-center space-x-2">
                     <CalendarDays className="h-4 w-4 text-gray-500" />
-                    <p className="text-base font-medium">{subscriptionData.startDate}</p>
+                    <p className="text-base font-medium">{formatDate(subscription?.billing_start)}</p>
                   </div>
                 </div>
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-gray-500">Renews On</p>
                   <div className="flex items-center space-x-2">
                     <CalendarDays className="h-4 w-4 text-gray-500" />
-                    <p className="text-base font-medium">{subscriptionData.renewalDate}</p>
+                    <p className="text-base font-medium">{formatDate(subscription?.billing_end)}</p>
                   </div>
                 </div>
               </div>
               
               <div className="pt-4 border-t">
-                <button className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                <button 
+                  className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                >
                   Manage Subscription
                 </button>
               </div>

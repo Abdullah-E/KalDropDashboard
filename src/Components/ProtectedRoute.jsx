@@ -1,15 +1,29 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../providers/supabaseAuth";
+
+// Create context for the authenticated user
+const UserContext = createContext(null);
+
+// Custom hook to access the user context
+export const useUser = () => {
+  const context = useContext(UserContext);
+  if (context === undefined) {
+    throw new Error('useUser must be used within a UserContext.Provider');
+  }
+  return context.user;
+};
 
 const ProtectedRoute = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         // Check initial auth state
         const checkUser = async () => {
             const { data: { user } } = await supabase.auth.getUser();
+            setUser(user);
             setIsAuthenticated(!!user);
             setIsLoading(false);
         };
@@ -18,9 +32,9 @@ const ProtectedRoute = ({ children }) => {
 
         // Subscribe to auth changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+            setUser(session?.user || null);
             setIsAuthenticated(!!session);
             setIsLoading(false);
-            
         });
 
         // Cleanup subscription
@@ -37,7 +51,11 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" replace />;
     }
 
-    return children;
+    return (
+        <UserContext.Provider value={{ user, isAuthenticated }}>
+            {children}
+        </UserContext.Provider>
+    );
 };
 
 export default ProtectedRoute;
