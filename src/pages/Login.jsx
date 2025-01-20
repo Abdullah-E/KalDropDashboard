@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginWithEmail } from '../providers/supabaseAuth';
+import Vendra from '../assets/Vendra.jpg';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -29,6 +30,7 @@ const Login = () => {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+                <img src={Vendra} alt="" className='m-auto' />
                 <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">

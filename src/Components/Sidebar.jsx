@@ -2,6 +2,7 @@ import React from 'react';
 import { Settings, Package, CreditCard, Upload, LayoutDashboard, ShoppingCart, LogOut } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { signOut } from '../providers/supabaseAuth';
+import Vendra from '../assets/Vendra.jpg';
 
 const Sidebar = () => {
     const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Sidebar = () => {
     return (
         <div className="w-64 bg-white shadow-lg flex flex-col h-full">
             <div className="p-4 border-b">
-                <h1 className="text-xl font-bold">Noar Academy</h1>
+                <img src={Vendra} alt="Vendra" className='w-40' />
             </div>
             
             <nav className="p-4 flex-1">
