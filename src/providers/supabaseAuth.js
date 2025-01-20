@@ -116,5 +116,19 @@ const signOut = async () => {
   }
 
 }
+export const signUpWithEmail = async (email, password, name) => {
+    const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+            data: {
+                full_name: name
+            }
+        }
+    })
+    
+    if (error) throw error
+    return data
+}
 
 export {supabase,loginWithEmail, signOut, getLoggedInUser}

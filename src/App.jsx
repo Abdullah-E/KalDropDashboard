@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
-import { BrowserRouter as Router, Route, Routes, Outlet } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, Outlet , Navigate } from 'react-router-dom'
+import { supabase } from './providers/supabaseAuth'
 import Dashboard from './pages/Dashboard'
 import Sidebar from './Components/Sidebar'
 import Orders from './pages/Orders'
@@ -10,6 +11,7 @@ import Billing from './pages/Billing'
 import EditProduct from './pages/EditProduct'
 import Login from './pages/Login'
 import ProtectedRoute from './Components/ProtectedRoute'
+import SignUp from './pages/SignUp'
 
 // Layout component for the protected routes
 const DashboardLayout = () => {
@@ -22,14 +24,59 @@ const DashboardLayout = () => {
     </div>
   );
 };
+const GuestRoute = ({ children }) => {
+  const [session, setSession] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  return !session ? children : <Navigate to="/dashboard" replace />;
+};
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        
-        {/* Protected routes */}
+        {/* Auth routes */}
+        <Route
+          path="/signup"
+          element={
+            <GuestRoute>
+              <SignUp />
+            </GuestRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <GuestRoute>
+              <Login />
+            </GuestRoute>
+          }
+        />
+
+        {/* Redirect root to signup */}
+        <Route path="/" element={<Navigate to="/signup" replace />} />
+
+        {/* Protected dashboard routes */}
         <Route
           element={
             <ProtectedRoute>
@@ -37,7 +84,7 @@ function App() {
             </ProtectedRoute>
           }
         >
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/orders" element={<Orders />} />
           <Route path="/uploader-settings" element={<Supplier />} />
           <Route path="/products" element={<Products />} />
@@ -49,4 +96,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
