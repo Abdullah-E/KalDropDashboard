@@ -12,6 +12,7 @@ import EditProduct from './pages/EditProduct'
 import Login from './pages/Login'
 import ProtectedRoute from './Components/ProtectedRoute'
 import SignUp from './pages/SignUp'
+import Settings from './pages/Settings'
 
 // Layout component for the protected routes
 const DashboardLayout = () => {
@@ -90,6 +91,7 @@ function App() {
           <Route path="/products" element={<Products />} />
           <Route path="/edit-product/:id" element={<EditProduct />} />
           <Route path="/billing" element={<Billing />} />
+          <Route path="/settings" element={<Settings/>} />
         </Route>
       </Routes>
     </Router>

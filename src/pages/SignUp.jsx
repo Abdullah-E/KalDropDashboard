@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signUpWithEmail } from '../providers/supabaseAuth';
-
+import Vendra from '../assets/Vendra.jpg';
 const SignUp = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);
@@ -12,7 +12,9 @@ const SignUp = () => {
         setError(null);
         setIsLoading(true);
 
-        const name = e.target.name.value;
+        const firstName = e.target.firstName.value;
+        const lastName = e.target.lastName.value;
+        const country = e.target.country.value;
         const email = e.target.email.value;
         const password = e.target.password.value;
         const confirmPassword = e.target.confirmPassword.value;
@@ -24,7 +26,7 @@ const SignUp = () => {
         }
 
         try {
-            await signUpWithEmail(email, password, name);
+            await signUpWithEmail(email, password, { firstName, lastName, country });
             navigate('/login');
         } catch (error) {
             console.error('Error signing up:', error.message);
@@ -37,6 +39,7 @@ const SignUp = () => {
     return (
         <div className="min-h-screen w-full flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+                <img src="" alt="Vendra" className="w-32 h-32 mx-auto mb-4" /> {/* Added size and centering */}
                 <h2 className="text-2xl font-bold text-center mb-6">Create Account</h2>
                 {error && (
                     <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
@@ -45,15 +48,39 @@ const SignUp = () => {
                 )}
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-                            Full Name
+                        <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                            First Name
                         </label>
                         <input
                             type="text"
-                            id="name"
+                            id="firstName"
                             required
                             className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Enter your full name"
+                            placeholder="Enter your first name"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
+                            Last Name
+                        </label>
+                        <input
+                            type="text"
+                            id="lastName"
+                            required
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Enter your last name"
+                        />
+                    </div>
+                    <div>
+                        <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                            Country
+                        </label>
+                        <input
+                            type="text"
+                            id="country"
+                            required
+                            className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Enter your country"
                         />
                     </div>
                     <div>
