@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useGet } from '../api/useGet';
+import { usePost } from '../api/usePost';
+import { usePut } from '../api/usePut';
 
 const Supplier = () => {
-  // Combined state for all settings
+  // Fetch data and states
+  //const { data: template, loading, error } = useGet('template');
+  //const { data: uploaderSettings, loading: uploaderLoading, error: uploaderError } = useGet('uploader-settings');
+  const { putData, loading: postLoading, error: postError } = usePut();
+
   const [settings, setSettings] = useState({
     // General settings
     marketplaceRegion: 'United States',
@@ -11,7 +18,7 @@ const Supplier = () => {
     fixedItemSpecifics: false,
     addBorderToMainImage: false,
     promotedListings: false,
-    
+
     // Template settings
     headerImage: '',
     footerImage: '',
@@ -19,13 +26,13 @@ const Supplier = () => {
     itemSpecifics: [
       { key: 'Shipping', value: 'Free shipping' },
       { key: 'Condition', value: 'New' },
-      { key: 'Brand', value: 'Unbranded' }
-    ]
+      { key: 'Brand', value: 'Unbranded' },
+    ],
   });
 
   const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
 
-  // Load settings from localStorage on mount
+  // Load settings from localStorage
   useEffect(() => {
     const savedSettings = localStorage.getItem('supplierSettings');
     if (savedSettings) {
@@ -33,84 +40,81 @@ const Supplier = () => {
     }
   }, []);
 
-  // Show feedback message
+  // Display feedback message
   const showFeedback = (text, type) => {
     setFeedbackMessage({ text, type });
     setTimeout(() => setFeedbackMessage({ text: '', type: '' }), 3000);
   };
 
-  // Handle general setting changes
+  // Update general settings
   const handleGeneralSettingChange = (setting, value) => {
-    setSettings(prev => {
+    setSettings((prev) => {
       const newSettings = {
         ...prev,
-        [setting]: value !== undefined ? value : !prev[setting]
+        [setting]: value !== undefined ? value : !prev[setting],
       };
       localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
       return newSettings;
     });
   };
 
-  // Handle item specifics changes
+  // Update item specifics
   const handleItemSpecificChange = (index, field, value) => {
-    setSettings(prev => {
-      const newSpecifics = [...prev.itemSpecifics];
-      newSpecifics[index] = {
-        ...newSpecifics[index],
-        [field]: value
-      };
-      const newSettings = {
-        ...prev,
-        itemSpecifics: newSpecifics
-      };
+    setSettings((prev) => {
+      const updatedSpecifics = [...prev.itemSpecifics];
+      updatedSpecifics[index] = { ...updatedSpecifics[index], [field]: value };
+      const newSettings = { ...prev, itemSpecifics: updatedSpecifics };
       localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
       return newSettings;
     });
   };
 
-  // Add new item specific
+  // Add a new item specific
   const handleAddItemSpecific = () => {
-    setSettings(prev => {
+    setSettings((prev) => {
       const newSettings = {
         ...prev,
-        itemSpecifics: [...prev.itemSpecifics, { key: '', value: '' }]
+        itemSpecifics: [...prev.itemSpecifics, { key: '', value: '' }],
       };
       localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
       return newSettings;
     });
   };
 
-  // Remove item specific
+  // Remove an item specific
   const handleRemoveItemSpecific = (index) => {
-    setSettings(prev => {
+    setSettings((prev) => {
       const newSettings = {
         ...prev,
-        itemSpecifics: prev.itemSpecifics.filter((_, i) => i !== index)
+        itemSpecifics: prev.itemSpecifics.filter((_, i) => i !== index),
       };
       localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
       return newSettings;
     });
   };
 
-  // Save all settings
+  // Save settings
   const handleSaveSettings = async () => {
     try {
-      // Here you would typically make an API call to save the settings
-      // await api.saveSettings(settings);
-      showFeedback('Settings saved successfully!', 'success');
-      localStorage.setItem('supplierSettings', JSON.stringify(settings));
-    } catch (error) {
-      showFeedback('Failed to save settings.', 'error');
+        const response = await putData('uploader-settings', settings);
+        if (response.error) {
+            throw new Error(response.error.message);
+        }
+        showFeedback('Settings saved successfully!', 'success');
+    } catch (err) {
+        showFeedback(`Error saving settings: ${err.message}`, 'error');
     }
-  };
+};
 
   return (
     <div className="m-auto p-8 bg-gray-100 min-h-screen w-2/4">
       {/* Feedback Message */}
       {feedbackMessage.text && (
-        <div className={`fixed top-4 right-4 p-4 rounded-md ${
-          feedbackMessage.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        } text-white`}>
+        <div
+          className={`fixed top-4 right-4 p-4 rounded-md ${
+            feedbackMessage.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          } text-white`}
+        >
           {feedbackMessage.text}
         </div>
       )}
@@ -121,10 +125,9 @@ const Supplier = () => {
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">General Listing Settings</h2>
           <div className="space-y-4">
-            {/* Marketplace region */}
             <div>
-              <label className="block font-medium mb-2">Marketplace region</label>
-              <select 
+              <label className="block font-medium mb-2">Marketplace Region</label>
+              <select
                 className="w-full p-2 border rounded-md"
                 value={settings.marketplaceRegion}
                 onChange={(e) => handleGeneralSettingChange('marketplaceRegion', e.target.value)}
@@ -135,45 +138,24 @@ const Supplier = () => {
                 <option>Australia</option>
               </select>
             </div>
-
-            {/* Toggles */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              <label className="flex items-center space-x-3">
-                <input 
-                  type="checkbox" 
-                  className="toggle-checkbox"
-                  checked={settings.uploadVideos}
-                  onChange={() => handleGeneralSettingChange('uploadVideos')}
-                />
-                <span>Upload product videos</span>
-              </label>
-              <label className="flex items-center space-x-3">
-                <input 
-                  type="checkbox" 
-                  className="toggle-checkbox"
-                  checked={settings.includeOutOfStock}
-                  onChange={() => handleGeneralSettingChange('includeOutOfStock')}
-                />
-                <span>Include out of stock variations</span>
-              </label>
-              <label className="flex items-center space-x-3">
-                <input 
-                  type="checkbox" 
-                  className="toggle-checkbox"
-                  checked={settings.duplicateMaxPhotos}
-                  onChange={() => handleGeneralSettingChange('duplicateMaxPhotos')}
-                />
-                <span>Duplicate to max photos</span>
-              </label>
-              <label className="flex items-center space-x-3">
-                <input 
-                  type="checkbox" 
-                  className="toggle-checkbox"
-                  checked={settings.fixedItemSpecifics}
-                  onChange={() => handleGeneralSettingChange('fixedItemSpecifics')}
-                />
-                <span>Fixed item specifics</span>
-              </label>
+              {/* Add toggles dynamically */}
+              {[
+                { label: 'Upload Product Videos', key: 'uploadVideos' },
+                { label: 'Include Out of Stock Variations', key: 'includeOutOfStock' },
+                { label: 'Duplicate to Max Photos', key: 'duplicateMaxPhotos' },
+                { label: 'Fixed Item Specifics', key: 'fixedItemSpecifics' },
+              ].map((toggle) => (
+                <label key={toggle.key} className="flex items-center space-x-3">
+                  <input
+                    type="checkbox"
+                    className="toggle-checkbox"
+                    checked={settings[toggle.key]}
+                    onChange={() => handleGeneralSettingChange(toggle.key)}
+                  />
+                  <span>{toggle.label}</span>
+                </label>
+              ))}
             </div>
           </div>
         </div>
@@ -182,7 +164,6 @@ const Supplier = () => {
         <div className="bg-white shadow rounded-lg p-6">
           <h2 className="text-lg font-semibold mb-4">Template Settings</h2>
           <div className="space-y-4">
-            {/* Header & Footer Images */}
             <div>
               <label className="block font-medium mb-2">Header Image URL</label>
               <input
@@ -201,20 +182,15 @@ const Supplier = () => {
                 onChange={(e) => handleGeneralSettingChange('footerImage', e.target.value)}
               />
             </div>
-
-            {/* Item Location */}
             <div>
               <label className="block font-medium mb-2">Item Location</label>
               <input
                 type="text"
-                placeholder="Shanghai"
                 className="w-full p-2 border rounded-md"
                 value={settings.itemLocation}
                 onChange={(e) => handleGeneralSettingChange('itemLocation', e.target.value)}
               />
             </div>
-
-            {/* Item Specifics */}
             <div>
               <label className="block font-medium mb-2">Item Specifics</label>
               <div className="space-y-3">
@@ -222,25 +198,23 @@ const Supplier = () => {
                   <div key={index} className="flex items-center gap-2">
                     <input
                       type="text"
-                      placeholder="Key (e.g., Brand)"
                       className="w-1/3 p-2 border rounded-md"
                       value={specific.key}
+                      placeholder="Key (e.g., Brand)"
                       onChange={(e) => handleItemSpecificChange(index, 'key', e.target.value)}
                     />
                     <input
                       type="text"
-                      placeholder="Value (e.g., Unbranded)"
                       className="w-1/2 p-2 border rounded-md"
                       value={specific.value}
+                      placeholder="Value (e.g., Unbranded)"
                       onChange={(e) => handleItemSpecificChange(index, 'value', e.target.value)}
                     />
                     <button
                       className="p-2 text-red-500 hover:text-red-700"
                       onClick={() => handleRemoveItemSpecific(index)}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
+                      Remove
                     </button>
                   </div>
                 ))}
@@ -256,11 +230,14 @@ const Supplier = () => {
         </div>
 
         {/* Save Button */}
-        <button 
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        <button
+          className={`mt-4 px-4 py-2 rounded-md ${
+            postLoading ? 'bg-gray-400' : 'bg-blue-600'
+          } text-white`}
           onClick={handleSaveSettings}
+          disabled={postLoading}
         >
-          Save All Settings
+          {postLoading ? 'Saving...' : 'Save Settings'}
         </button>
       </div>
     </div>
