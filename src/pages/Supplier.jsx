@@ -6,7 +6,8 @@ import { usePut } from '../api/usePut';
 const Supplier = () => {
   // Fetch data and states
   //const { data: template, loading, error } = useGet('template');
-  //const { data: uploaderSettings, loading: uploaderLoading, error: uploaderError } = useGet('uploader-settings');
+  const { data: uploaderSettings, loading: uploaderLoading, error: uploaderError } = useGet('uploader-settings');
+  console.log(uploaderSettings);
   const { putData, loading: postLoading, error: postError } = usePut();
 
   const [settings, setSettings] = useState({
@@ -97,9 +98,9 @@ const Supplier = () => {
   const handleSaveSettings = async () => {
     try {
         const response = await putData('uploader-settings', settings);
-        if (response.error) {
-            throw new Error(response.error.message);
-        }
+        // if (response.error) {
+        //     throw new Error(response.error.message);
+        // }
         showFeedback('Settings saved successfully!', 'success');
     } catch (err) {
         showFeedback(`Error saving settings: ${err.message}`, 'error');

@@ -1,5 +1,4 @@
-import { getLoggedInUser } from "../providers/supabaseAuth";
-import { supabase } from "../providers/supabaseAuth";
+import { getLoggedInUser, supabase } from "../providers/supabaseAuth";
 import React, { useState, useEffect } from "react";
 
 export default function Settings() {
