@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useGet } from '../api/useGet';
 import { usePut } from '../api/usePut';
 
+
+
 const Supplier = () => {
   // Fetch data and states
   const { data: uploaderSettings, loading: uploaderLoading, error: uploaderError } = useGet('uploader-settings');
@@ -119,6 +121,7 @@ const Supplier = () => {
     } catch (err) {
       showFeedback(`Error saving settings: ${err.message}`, 'error');
     }
+    
   };
 
   return (
@@ -228,7 +231,24 @@ const Supplier = () => {
             </div>
           </div>
         </div>
-
+        {/* Template Selection */}
+        <div className="bg-white shadow rounded-lg p-6">
+          <h2 className="text-lg font-semibold mb-4">Template Selection</h2>
+          <div className="space-y-4">
+            <div>
+              <label className="block font-medium mb-2">Choose Template</label>
+              <select
+                className="w-full p-2 border rounded-md"
+                value={settings.template || 'template1'}
+                onChange={(e) => handleGeneralSettingChange('template', e.target.value)}
+              >
+                <option value="template1">Template 1</option>
+                <option value="template2">Template 2</option>
+                <option value="template3">Template 3</option>
+              </select>
+            </div>
+          </div>
+        </div>
         {/* Save Button */}
         <button
           className={`mt-4 px-4 py-2 rounded-md ${
