@@ -1,11 +1,24 @@
 import React from 'react';
 import { useGet } from '../api/useGet';
 
+const ImagePreview = ({ imageUrl }) => {
+  return (
+    <div className="p-4 border rounded-md shadow-md">
+      <img
+        src={imageUrl}
+        alt="Preview"
+        className="w-full h-auto rounded-md"
+      />
+    </div>
+  );
+};
+
+
 const Products = () => {
   const { data: products, loading, error } = useGet('products');
 
   return (
-    <div className="m-auto p-8 bg-gray-100 min-h-screen w-2/4">
+    <div className="m-auto p-8 bg-white min-h-screen w-3/4">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">My Products</h1>
       <p className="text-gray-600 mb-6">View and manage your products.</p>
 
@@ -14,18 +27,13 @@ const Products = () => {
           <input
             type="text"
             placeholder="Filter products..."
-            className="w-64 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+            className="w-64 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue"
           />
-          <button className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600">
-            + Supplier
-          </button>
+         
         </div>
         <div className="flex space-x-4">
           <button className="px-4 py-2 bg-black text-white rounded-md flex items-center hover:bg-gray-800">
             <span className="mr-2">Import Product</span>
-          </button>
-          <button className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">
-            View
           </button>
         </div>
       </div>
@@ -36,46 +44,77 @@ const Products = () => {
         ) : error ? (
           <p className="text-center text-red-500 py-6">Error: {error}</p>
         ) : (
-          <table className="min-w-full table-auto">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-2 text-left text-gray-600">ID</th>
-                <th className="px-4 py-2 text-left text-gray-600">Name</th>
-                <th className="px-4 py-2 text-left text-gray-600">Price</th>
-                <th className="px-4 py-2 text-left text-gray-600">Supplier</th>
-                <th className="px-4 py-2 text-left text-gray-600">URL</th>
-                <th className="px-4 py-2"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {products?.map((product, index) => (
-                <tr key={product.id || index}>
-                  <td className="px-4 py-3">{product.id}</td>
-                  <td className="px-4 py-3">{product.name}</td>
-                  <td className="px-4 py-3">{product.price}</td>
-                  <td className="px-4 py-3">{product.supplier}</td>
-                  <td className="px-4 py-3">
-                    <a
-                      href={product.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 hover:underline"
-                    >
-                      View Product
-                    </a>
-                  </td>
-                  <td className="px-4 py-3">
-                    <a
-                      href={`/edit-product/${product.id}`}
-                      className="text-gray-500 hover:text-gray-800"
-                    >
-                      Edit
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
+  <div className="overflow-x-auto">
+    <table className="min-w-full divide-y divide-gray-200">
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Link</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+        </tr>
+      </thead>
+      <tbody className="bg-white divide-y divide-gray-200">
+        {products?.map((product, index) => (
+          <tr key={product.id || index} className="hover:bg-gray-50 transition-colors">
+            <td className="px-6 py-4 whitespace-nowrap">
+              <div className="w-17 h-17 flex items-center justify-center bg-brown rounded-md overflow-hidden">
+                <ImagePreview 
+                  imageUrl={product.images[0]} 
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            </td>
+            <td className="px-6 py-4 max-w-xs font-medium text-gray-900">
+              {product.title}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <span className="text-gray-900 font-medium">
+                ${parseFloat(product.price).toFixed(2)}
+              </span>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap text-gray-600">
+              {product.supplier}
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <a
+                href={product.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+              >
+                <span>View Product</span>
+                <svg className="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
+            </td>
+            <td className="px-6 py-4 whitespace-nowrap">
+              <a
+                href={`/edit-product/${product.id}`}
+                className="inline-flex items-center text-gray-500 hover:text-gray-800 transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                <span className="ml-2">Edit</span>
+              </a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+  
+  {products?.length === 0 && (
+    <div className="text-center py-8 bg-gray-50">
+      <p className="text-gray-500">No products found</p>
+    </div>
+  )}
+</div>
         )}
       </div>
     </div>

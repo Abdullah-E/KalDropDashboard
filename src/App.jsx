@@ -13,6 +13,10 @@ import Login from './pages/Login'
 import ProtectedRoute from './Components/ProtectedRoute'
 import SignUp from './pages/SignUp'
 import Settings from './pages/Settings'
+// import temp1 from './pages/templates/temp1'
+// // import temp2 from './pages/templates/temp2'
+// // import temp3 from './pages/templates/temp3'
+
 
 // Layout component for the protected routes
 const DashboardLayout = () => {
@@ -92,6 +96,9 @@ function App() {
           <Route path="/edit-product/:id" element={<EditProduct />} />
           <Route path="/billing" element={<Billing />} />
           <Route path="/settings" element={<Settings/>} />
+          {/* <Route path="/templates/template1" element={<temp1/>} />
+          {/* <Route path="/templates/template2" element={<temp2/>} />
+          <Route path="/templates/template3" element={<temp3/>} /> */}
         </Route>
       </Routes>
     </Router>
