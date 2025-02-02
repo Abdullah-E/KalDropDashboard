@@ -231,7 +231,7 @@ const EditProduct = () => {
           <button
             type="submit"
             disabled={updating}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
+            className="px-6 py-3 bg-blue-600 text-black rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2"
           >
             {updating ? (
               <>

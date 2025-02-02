@@ -1,11 +1,12 @@
 import React from 'react';
 import { Settings, Package, CreditCard, Upload, LayoutDashboard, ShoppingCart, LogOut } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from '../providers/supabaseAuth';
-import Vendra from '../assets/Vendra.jpg';
+import Vendra from '../assets/Vendra.png';
 
 const Sidebar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleSignOut = async () => {
         try {
@@ -16,49 +17,49 @@ const Sidebar = () => {
         }
     };
 
+    const menuItems = [
+        { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
+        { to: '/products', icon: ShoppingCart, label: 'Products' },
+        { to: '/uploader-settings', icon: Upload, label: 'Uploader Settings' },
+        { to: '/billing', icon: CreditCard, label: 'Billing' },
+        { to: '/settings', icon: Settings, label: 'Settings' },
+    ];
+
     return (
-        <div className="w-64 bg-white shadow-lg flex flex-col h-full">
-            <div className="p-4 border-b">
-                <img src={Vendra} alt="Vendra" className='w-40' />
+        <div className="w-72 bg-gradient-to-br from-[#1a2b4d] to-[#2a4270] shadow-lg flex flex-col min-h-screen fixed text-[#e8f1ff]">
+            {/* Logo Section */}
+            <div className="p-8 flex justify-center">
+                <img src={Vendra} alt="Vendra" className="w-48" />
             </div>
             
-            <nav className="p-4 flex-1">
-                <div className="space-y-2">
-                    <Link to="/" className="flex items-center px-4 py-2 text-gray-700 bg-gray-100 rounded-lg">
-                        <LayoutDashboard className="w-5 h-5 mr-3" />
-                        Dashboard
-                    </Link>
-                    {/* <Link to="/orders" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <ShoppingCart className="w-5 h-5 mr-3" />
-                        Orders
-                    </Link> */}
-                    <Link to="/products" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <ShoppingCart className="w-5 h-5 mr-3" />
-                        Products
-                    </Link>
-                    <Link to="/uploader-settings" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <Upload className="w-5 h-5 mr-3" />
-                        Uploader Settings
-                    </Link>
-                    <Link to="/billing" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <CreditCard className="w-5 h-5 mr-3" />
-                        Billing
-                    </Link>
-                    <Link to="/settings" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
-                        <Settings className="w-5 h-5 mr-3" />
-                        Settings
-                    </Link>
+            {/* Navigation Links */}
+            <nav className="p-6 flex-1">
+                <div className="space-y-3">
+                    {menuItems.map(({ to, icon: Icon, label }) => (
+                        <Link
+                            key={to}
+                            to={to}
+                            className={`flex items-center px-5 py-4 rounded-lg transition duration-200 text-lg ${
+                                location.pathname === to
+                                    ? 'bg-[#4f6ed3] text-white font-semibold' // Active Link
+                                    : 'hover:bg-[#2a3f6d] text-[#c3d4f0] hover:text-white'
+                            }`}
+                        >
+                            <Icon className="w-6 h-6 mr-4" />
+                            <span>{label}</span>
+                        </Link>
+                    ))}
                 </div>
             </nav>
 
-            {/* Sign Out Button at bottom */}
-            <div className="p-4 border-t">
+            {/* Sign Out Button */}
+            <div className="p-6">
                 <button
                     onClick={handleSignOut}
-                    className="flex items-center px-4 py-2 text-red-600 hover:bg-red-50 rounded-lg w-full"
+                    className="flex items-center px-5 py-4 bg-[#c53030] hover:bg-[#9b2c2c] rounded-lg w-full transition duration-200 text-white text-lg"
                 >
-                    <LogOut className="w-5 h-5 mr-3" />
-                    Sign Out
+                    <LogOut className="w-6 h-6 mr-4" />
+                    <span className="font-medium">Sign Out</span>
                 </button>
             </div>
         </div>

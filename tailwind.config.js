@@ -6,11 +6,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        gold: "#E2C044",
-        black: "#04030F",
+        gold: "#FFCA3A",
+        black: "#000004",
         white: "#FFFFFF",
         blue: "#2774FB",
         brown: "#8A716A",
+        // Complementary colors
+        teal: "#2DD4BF", // A fresh teal for accents
+        gray: {
+          100: "#F3F4F6", // Light gray for backgrounds
+          700: "#374151", // Dark gray for text
+        },
+        indigo: "#4B244A",
+        purple:"#AEC7FF",
       },
     },
   },

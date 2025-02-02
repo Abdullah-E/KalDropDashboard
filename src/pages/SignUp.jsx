@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { signUpWithEmail } from '../providers/supabaseAuth';
-import Vendra from '../assets/Vendra.jpg';
+import Vendra from '../assets/Vendra.png';
 const SignUp = () => {
     const navigate = useNavigate();
     const [error, setError] = useState(null);

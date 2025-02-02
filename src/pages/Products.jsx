@@ -18,7 +18,7 @@ const Products = () => {
   const { data: products, loading, error } = useGet('products');
 
   return (
-    <div className="m-auto p-8 bg-white min-h-screen w-3/4">
+    <div className="m-auto p-8 bg-white min-h-screen w-4/4">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">My Products</h1>
       <p className="text-gray-600 mb-6">View and manage your products.</p>
 
@@ -32,7 +32,7 @@ const Products = () => {
          
         </div>
         <div className="flex space-x-4">
-          <button className="px-4 py-2 bg-black text-white rounded-md flex items-center hover:bg-gray-800">
+          <button className="px-4 py-2 bg-[#2a4270] text-white rounded-md flex items-center hover:bg-gray-800">
             <span className="mr-2">Import Product</span>
           </button>
         </div>
@@ -47,24 +47,24 @@ const Products = () => {
           <div className="rounded-lg border border-gray-200 bg-white shadow-sm overflow-hidden">
   <div className="overflow-x-auto">
     <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
+      <thead className="bg-[#2a4270]">
         <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Supplier</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Product Link</th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Image</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Name</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Price</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Supplier</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Product Link</th>
+          <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Actions</th>
         </tr>
       </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
+      <tbody className="bg-[#eef2f9] divide-y divide-gray-200">
         {products?.map((product, index) => (
           <tr key={product.id || index} className="hover:bg-gray-50 transition-colors">
             <td className="px-6 py-4 whitespace-nowrap">
-              <div className="w-17 h-17 flex items-center justify-center bg-brown rounded-md overflow-hidden">
+              <div className="w-16 h-16 flex items-center justify-center bg-[#94abbe] rounded-md overflow-hidden">
                 <ImagePreview 
                   imageUrl={product.images[0]} 
-                  className="max-w-full max-h-full object-contain"
+                  className="w-4 h-4 object-contain"
                 />
               </div>
             </td>
