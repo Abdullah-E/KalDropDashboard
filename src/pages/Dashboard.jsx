@@ -1,7 +1,7 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useGet } from '../api/useGet';
-
+import { useUser } from '../Components/ProtectedRoute';
 const Dashboard = () => {
   const revenueData = [
     { date: '2024-12-18', value: 10 },
@@ -11,9 +11,11 @@ const Dashboard = () => {
     { date: '2024-12-22', value: 0 },
     { date: '2024-12-23', value: 2500 }
   ];
-
   const { data: products } = useGet('products');
+  console.log('Products:', products);
   const productCount = Array.isArray(products) ? products.length : 0;
+  const user = useUser();
+    console.log('User:', user);
 
   return (
     <div className="flex-1 bg-gradient-to-br from-[#94abbe] to-[#eef2f9] min-h-screen p-8">
@@ -21,7 +23,7 @@ const Dashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-black mb-2">Dashboard</h1>
-        <p className="text-black text-lg">Quickly assess your success.</p>
+        <p className="text-black text-lg">{user.first_name}</p>
       </div>
 
       {/* Stats Grid */}

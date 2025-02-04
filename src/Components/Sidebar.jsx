@@ -26,7 +26,7 @@ const Sidebar = () => {
     ];
 
     return (
-        <div className="w-72 bg-gradient-to-br from-[#1a2b4d] to-[#2a4270] shadow-lg flex flex-col min-h-screen fixed text-[#e8f1ff]">
+        <div className="w-72 bg-gradient-to-br from-[#1a2b4d] to-[#2a4270] shadow-lg flex flex-col h-4/4 text-[#e8f1ff]">
             {/* Logo Section */}
             <div className="p-8 flex justify-center">
                 <img src={Vendra} alt="Vendra" className="w-48" />

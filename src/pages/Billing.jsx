@@ -13,6 +13,59 @@ const Billing = () => {
   const { data: subscription, loading: subscriptionLoading } = useGet(
     user?.id ? `user-subscription?id=${user.id}` : null
   );
+  console.log(subscription);
+
+  const userJson = `
+{
+  "id": "b92b719c-7362-4ec9-ba36-8af82b6586cd",
+  "aud": "authenticated",
+  "role": "authenticated",
+  "email": "salar.amir@metu.edu.tr",
+  "email_confirmed_at": "2025-01-20T18:09:15.108795Z",
+  "phone": "",
+  "confirmation_sent_at": "2025-01-20T18:08:55.635706Z",
+  "confirmed_at": "2025-01-20T18:09:15.108795Z",
+  "last_sign_in_at": "2025-01-31T14:31:06.957546Z",
+  "app_metadata": {
+    "provider": "email",
+    "providers": [
+      "email"
+    ]
+  },
+  "user_metadata": {
+    "email": "salar.amir@metu.edu.tr",
+    "email_verified": true,
+    "full_name": "Sal Damme",
+    "phone_verified": false,
+    "sub": "b92b719c-7362-4ec9-ba36-8af82b6586cd"
+  },
+  "identities": [
+    {
+      "identity_id": "3f346663-4893-4747-89c9-885312238139",
+      "id": "b92b719c-7362-4ec9-ba36-8af82b6586cd",
+      "user_id": "b92b719c-7362-4ec9-ba36-8af82b6586cd",
+      "identity_data": {
+        "email": "salar.amir@metu.edu.tr",
+        "email_verified": true,
+        "full_name": "Sal Damme",
+        "phone_verified": false,
+        "sub": "b92b719c-7362-4ec9-ba36-8af82b6586cd"
+      },
+      "provider": "email",
+      "last_sign_in_at": "2025-01-20T18:08:55.629351Z",
+      "created_at": "2025-01-20T18:08:55.629432Z",
+      "updated_at": "2025-01-20T18:08:55.629432Z",
+      "email": "salar.amir@metu.edu.tr"
+    }
+  ],
+  "created_at": "2025-01-20T18:08:55.61698Z",
+  "updated_at": "2025-02-03T10:31:09.890616Z",
+  "is_anonymous": false
+}
+`;
+
+const userObject = JSON.parse(userJson);
+
 
   const isSubscribed = subscription && subscription.status === 'active';
 
