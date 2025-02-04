@@ -15,6 +15,7 @@ const Dashboard = () => {
   console.log('Products:', products);
   const productCount = Array.isArray(products) ? products.length : 0;
   const user = useUser();
+    const Name=  user?.user_metadata?.full_name;
     console.log('User:', user);
 
   return (
@@ -23,7 +24,7 @@ const Dashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-black mb-2">Dashboard</h1>
-        <p className="text-black text-lg">{user.first_name}</p>
+        <p className="text-black text-lg">Hello {Name}!</p>
       </div>
 
       {/* Stats Grid */}

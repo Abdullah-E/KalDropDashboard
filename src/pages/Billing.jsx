@@ -1,75 +1,28 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CalendarDays, CheckCircle, AlertCircle } from 'lucide-react';
 import { initializePaddle } from '@paddle/paddle-js';
 import { useGet } from '../api/useGet';
 import { useUser } from '../Components/ProtectedRoute';
+import { usePost } from '../api/usePost';
 
 const Billing = () => {
-  const [loading, setLoading] = React.useState(false);
-  const [paddle, setPaddle] = React.useState();
+  const [loading, setLoading] = useState(false);
+  const [paddle, setPaddle] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
   const user = useUser();
+  
   console.log('User:', user);
   
   const { data: subscription, loading: subscriptionLoading } = useGet(
     user?.id ? `user-subscription?id=${user.id}` : null
   );
-  console.log(subscription);
 
-  const userJson = `
-{
-  "id": "b92b719c-7362-4ec9-ba36-8af82b6586cd",
-  "aud": "authenticated",
-  "role": "authenticated",
-  "email": "salar.amir@metu.edu.tr",
-  "email_confirmed_at": "2025-01-20T18:09:15.108795Z",
-  "phone": "",
-  "confirmation_sent_at": "2025-01-20T18:08:55.635706Z",
-  "confirmed_at": "2025-01-20T18:09:15.108795Z",
-  "last_sign_in_at": "2025-01-31T14:31:06.957546Z",
-  "app_metadata": {
-    "provider": "email",
-    "providers": [
-      "email"
-    ]
-  },
-  "user_metadata": {
-    "email": "salar.amir@metu.edu.tr",
-    "email_verified": true,
-    "full_name": "Sal Damme",
-    "phone_verified": false,
-    "sub": "b92b719c-7362-4ec9-ba36-8af82b6586cd"
-  },
-  "identities": [
-    {
-      "identity_id": "3f346663-4893-4747-89c9-885312238139",
-      "id": "b92b719c-7362-4ec9-ba36-8af82b6586cd",
-      "user_id": "b92b719c-7362-4ec9-ba36-8af82b6586cd",
-      "identity_data": {
-        "email": "salar.amir@metu.edu.tr",
-        "email_verified": true,
-        "full_name": "Sal Damme",
-        "phone_verified": false,
-        "sub": "b92b719c-7362-4ec9-ba36-8af82b6586cd"
-      },
-      "provider": "email",
-      "last_sign_in_at": "2025-01-20T18:08:55.629351Z",
-      "created_at": "2025-01-20T18:08:55.629432Z",
-      "updated_at": "2025-01-20T18:08:55.629432Z",
-      "email": "salar.amir@metu.edu.tr"
-    }
-  ],
-  "created_at": "2025-01-20T18:08:55.61698Z",
-  "updated_at": "2025-02-03T10:31:09.890616Z",
-  "is_anonymous": false
-}
-`;
-
-const userObject = JSON.parse(userJson);
-
-
+  console.log('Subscription:', subscription?.id);
+  const subscriptionID = subscription?.id;
   const isSubscribed = subscription && subscription.status === 'active';
 
-  React.useEffect(() => {
+  useEffect(() => {
     initializePaddle({ 
       environment: 'sandbox', 
       token: import.meta.env.VITE_PADDLE_CLIENT_TOKEN 
@@ -97,6 +50,24 @@ const userObject = JSON.parse(userJson);
       });
     } catch (error) {
       console.error('Subscription failed:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log('Cancelling subscription:', subscriptionID);
+      const response = await usePost('cancel-subscription', { subscriptionId: subscriptionID });
+      console.log('Response:', response);
+      if (response.data.success) {
+        setSuccess(true);
+        console.log('Subscription cancelled successfully');
+      }
+    } catch (err) {
+      setError('Cancellation failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -165,7 +136,6 @@ const userObject = JSON.parse(userJson);
                   </div>
                 </div>
               </div>
-              
               <div className="pt-4 border-t">
                 <button 
                   className="w-full px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
@@ -198,17 +168,22 @@ const userObject = JSON.parse(userJson);
                 </button>
               </div>
               
-              <div className="pt-4 border-t">
-                <div className="flex items-center space-x-2 text-sm text-gray-600">
-                  <AlertCircle className="h-4 w-4" />
-                  <p>Subscription will renew automatically monthly</p>
-                </div>
-              </div>
             </div>
           </div>
+          
         </div>
       )}
+      <div className="pt-4 border-t">
+                <button 
+                  onClick={handleCancel} 
+                  disabled={loading}
+                  className="w-full px-4 py-2 text-red-600 border border-red-300 rounded-md hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  {loading ? 'Cancelling...' : 'Cancel Subscription'}
+                </button>
+              </div>
     </div>
+    
   );
 };
 
