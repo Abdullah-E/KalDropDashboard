@@ -21,6 +21,7 @@ export const useAuth = () => {
 // Provider component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [userObj, setUserObj] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,6 +30,16 @@ export const AuthProvider = ({ children }) => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         setUser(user);
+        // const response = await fetch(`${baseApi}${url}`, {
+        //   headers: {
+        //     Authorization: `Bearer ${token}`,
+        //     'Content-Type': 'application/json',
+        //   },
+        // });
+        // if (!response.ok) throw new Error('Network response was not ok');
+        // const result = await response.json();
+        // const {data: userObj} = result;
+        // console.log('userObj:', userObj);
       } catch (error) {
         console.error('Error getting initial session:', error);
       } finally {

@@ -17,6 +17,7 @@ const Billing = () => {
   const { data: subscription, loading: subscriptionLoading } = useGet(
     user?.id ? `user-subscription?id=${user.id}` : null
   );
+  const post = usePost();
 
   console.log('Subscription:', subscription?.id);
   const subscriptionID = subscription?.id;
@@ -60,7 +61,8 @@ const Billing = () => {
     setError(null);
     try {
       console.log('Cancelling subscription:', subscriptionID);
-      const response = await usePost('cancel-subscription', { subscriptionId: subscriptionID });
+      // const {postData,loading,error} = usePost('cancel-subscription', { subscriptionId: subscriptionID });
+      const response = await post(`cancel-subscription/${subscriptionID}`, { subscriptionId: subscriptionID });
       console.log('Response:', response);
       if (response.data.success) {
         setSuccess(true);
