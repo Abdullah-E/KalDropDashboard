@@ -1,5 +1,5 @@
 import React from 'react';
-import { Settings, Package, CreditCard, Upload, LayoutDashboard, ShoppingCart, LogOut } from 'lucide-react';
+import { Settings, Package, CreditCard, Upload, LayoutDashboard, ShoppingCart,GraduationCap, LogOut } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { signOut } from '../providers/supabaseAuth';
 import Vendra from '../assets/Vendra.png';
@@ -22,6 +22,7 @@ const Sidebar = () => {
         { to: '/products', icon: ShoppingCart, label: 'Products' },
         { to: '/uploader-settings', icon: Upload, label: 'Uploader Settings' },
         { to: '/billing', icon: CreditCard, label: 'Billing' },
+        { to: '/academy', icon: GraduationCap, label: 'Academy' },
         { to: '/settings', icon: Settings, label: 'Settings' },
     ];
 
