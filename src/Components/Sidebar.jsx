@@ -26,7 +26,7 @@ const Sidebar = () => {
     ];
 
     return (
-        <div className="w-72 bg-gradient-to-br from-[#1a2b4d] to-[#2a4270] shadow-lg flex flex-col h-4/4 text-[#e8f1ff]">
+        <div className="w-72 bg-gradient-to-br from-[#F9FBFF] to-[#e9e9e9] shadow-lg flex flex-col h-4/4 text-[#e8f1ff] border-r border-[#e5eaf3]">
             {/* Logo Section */}
             <div className="p-8 flex justify-center">
                 <img src={Vendra} alt="Vendra" className="w-48" />
@@ -42,7 +42,7 @@ const Sidebar = () => {
                             className={`flex items-center px-5 py-4 rounded-lg transition duration-200 text-lg ${
                                 location.pathname === to
                                     ? 'bg-[#4f6ed3] text-white font-semibold' // Active Link
-                                    : 'hover:bg-[#2a3f6d] text-[#c3d4f0] hover:text-white'
+                                    : 'hover:bg-white text-black hover:text-[#3E6FED]'
                             }`}
                         >
                             <Icon className="w-6 h-6 mr-4" />

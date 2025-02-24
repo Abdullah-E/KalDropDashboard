@@ -19,7 +19,7 @@ const Dashboard = () => {
     console.log('User:', user);
 
   return (
-    <div className="flex-1 bg-gradient-to-br from-[#94abbe] to-[#eef2f9] min-h-screen p-8">
+    <div className="flex-1 bg-gradient-to-br from-[#ffffff] to-[#eef2f9] min-h-screen p-8">
       
       {/* Header */}
       <div className="mb-8">
@@ -29,24 +29,24 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
-          <h3 className="text-[#94a2be] font-medium mb-2">Total Products</h3>
-          <p className="text-3xl font-bold text-black">{productCount}</p>
+        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
+          <h3 className="text-blacks font-medium mb-2">Total Products</h3>
+          <p className="text-3xl font-bold text-black  hover:text-[#3E6FED]">{productCount}</p>
         </div>
         
-        <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
+        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
           <h3 className="text-[#94a2be] font-medium mb-2">Revenue</h3>
-          <p className="text-3xl font-bold text-black">$2,500</p>
+          <p className="text-3xl font-bold text-black hover:text-[#3E6FED]">$2,500</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
+        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
           <h3 className="text-[#94a2be] font-medium mb-2">Active Listings</h3>
-          <p className="text-3xl font-bold text-black">150</p>
+          <p className="text-3xl font-bold text-black hover:text-[#3E6FED]">150</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
+        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
           <h3 className="text-[#94a2be] font-medium mb-2">Success Rate</h3>
-          <p className="text-3xl font-bold text-black">95%</p>
+          <p className="text-3xl font-bold text-black hover:text-[#3E6FED]">95%</p>
         </div>
       </div>
 
