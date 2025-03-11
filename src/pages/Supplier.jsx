@@ -24,13 +24,16 @@ const Supplier = () => {
       { Brand: 'Unbranded' },
       { Shipping: 'Free Shipping' },
       { Condition: 'New' }
-    ]
+    ],
+    promotedListing: false,
+    promotion_input: null
   };
+  
 
   const [settings, setSettings] = useState({
     marketplaceRegion: defaultSettings.marketplace_region,
     addBorder: defaultSettings.add_border_to_main_image,
-    uploadVideos: defaultSettings.upload_videos,
+    uploadVideo: defaultSettings.upload_videos,
     includeOutOfStock: defaultSettings.include_out_of_stock,
     duplicateMaxPhotos: defaultSettings.duplicate_max_photos,
     fixedItemSpecifics: defaultSettings.fixed_item_specifics,
@@ -38,7 +41,8 @@ const Supplier = () => {
     footerImage: defaultSettings.footer_image,
     itemLocation: defaultSettings.item_location,
     template: defaultSettings.template,
-    itemSpecifics: defaultSettings.item_specifics
+    itemSpecifics: defaultSettings.item_specifics,
+    promotedListingValue: defaultSettings.promotion_input,
   });
 
   const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
@@ -139,7 +143,7 @@ const Supplier = () => {
       <h1 className="text-3xl font-bold text-[#2a4270] mb-6">Supplier Settings</h1>
 
       <div className="space-y-6 max-w-4xl mx-auto">
-        {/* General Settings */}
+        /* General Settings */
         <div className="bg-white shadow-md rounded-xl p-8 border border-[#e5eaf3] hover:shadow-lg transition-all duration-200">
           <div className="flex items-center space-x-3 mb-6">
             <svg className="w-6 h-6 text-[#4f6ed3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,10 +177,9 @@ const Supplier = () => {
               <h3 className="text-[#2a4270] font-medium mb-4">Additional Options</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: 'uploadVideos', label: 'Upload Videos', icon: '📹' },
+                  { key: 'uploadVideo', label: 'Upload Video', icon: '📹' },
                   { key: 'includeOutOfStock', label: 'Include Out of Stock', icon: '📦' },
-                  { key: 'duplicateMaxPhotos', label: 'Max Photos', icon: '🖼️' },
-                  { key: 'fixedItemSpecifics', label: 'Fixed Specifics', icon: '📝' }
+                  { key: 'borderMainImage', label: 'Add Border to Main Image', icon: '🖼️' },
                 ].map(({ key, label, icon }) => (
                   <label key={key} className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
                     <div className="relative">
@@ -192,6 +195,28 @@ const Supplier = () => {
                     </span>
                   </label>
                 ))}
+                <div className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={settings.promotedListing}
+                      onChange={() => handleSettingChange('promotedListing', !settings.promotedListing)}
+                      className="w-5 h-5 rounded border-[#e5eaf3] text-[#4f6ed3] focus:ring-[#4f6ed3] transition-colors"
+                    />
+                  </div>
+                  <span className="text-[#2a4270] group-hover:text-[#4f6ed3] transition-colors">
+                    📝 Promoted Listing
+                  </span>
+                  {settings.promotedListing && (
+                    <input
+                      type="number"
+                      placeholder="15%"
+                      value={settings.promotedListingValue || ''}
+                      onChange={(e) => handleSettingChange('promotedListingValue', e.target.value)}
+                      className="ml-2 w-20 p-1 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
