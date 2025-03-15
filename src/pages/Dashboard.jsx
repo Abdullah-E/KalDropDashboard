@@ -34,20 +34,7 @@ const Dashboard = () => {
           <p className="text-3xl font-bold text-black  hover:text-[#3E6FED]">{productCount}</p>
         </div>
         
-        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
-          <h3 className="text-[#94a2be] font-medium mb-2">Revenue</h3>
-          <p className="text-3xl font-bold text-black hover:text-[#3E6FED]">$2,500</p>
-        </div>
-
-        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
-          <h3 className="text-[#94a2be] font-medium mb-2">Active Listings</h3>
-          <p className="text-3xl font-bold text-black hover:text-[#3E6FED]">150</p>
-        </div>
-
-        <div className="bg-[#eef2f9] p-6 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200 border border-[#e5eaf3]">
-          <h3 className="text-[#94a2be] font-medium mb-2">Success Rate</h3>
-          <p className="text-3xl font-bold text-black hover:text-[#3E6FED]">95%</p>
-        </div>
+        
       </div>
 
       {/* Chart Section */}

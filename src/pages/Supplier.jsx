@@ -18,7 +18,7 @@ const Supplier = () => {
     fixed_item_specifics: false,
     header_image: '',
     footer_image: '',
-    item_location: 'Shanghai',
+    item_location: { city: 'Shanghai', region: 'China' },
     template: 'template1',
     item_specifics: [
       { Brand: 'Unbranded' },
@@ -50,7 +50,7 @@ const Supplier = () => {
     if (uploaderSettings) {
       const newSettings = Object.keys(defaultSettings).reduce((acc, key) => {
         const camelKey = key.replace(/_([a-z])/g, g => g[1].toUpperCase());
-        acc[camelKey] = uploaderSettings[key] || defaultSettings[key];
+        acc[camelKey] = key === 'item_location' ? { ...defaultSettings[key], ...uploaderSettings[key] } : uploaderSettings[key] || defaultSettings[key];
         return acc;
       }, {});
       setSettings(newSettings);
@@ -116,7 +116,22 @@ const Supplier = () => {
 
   const handleSaveSettings = async () => {
     try {
-      const response = await putData('uploader-settings', settings);
+      const response = await putData('uploader-settings', {
+        ...settings,
+        item_location: settings.itemLocation,
+        marketplace_region: settings.marketplaceRegion,
+        add_border_to_main_image: settings.addBorder,
+        upload_videos: settings.uploadVideo,
+        include_out_of_stock: settings.includeOutOfStock,
+        duplicate_max_photos: settings.duplicateMaxPhotos,
+        fixed_item_specifics: settings.fixedItemSpecifics,
+        header_image: settings.headerImage,
+        footer_image: settings.footerImage,
+        template: settings.template,
+        item_specifics: settings.itemSpecifics,
+        promotedListing: settings.promotedListing,
+        promotion_input: settings.promotedListingValue,
+      });
       console.log('Settings saved:', response);
       showFeedback('Settings saved successfully!', 'success');
     } catch (error) {
@@ -273,13 +288,22 @@ const Supplier = () => {
 
               <div>
                 <label className="block text-[#94a2be] font-medium mb-2">Item Location</label>
-                <input
-                  type="text"
-                  value={settings.itemLocation}
-                  onChange={(e) => handleSettingChange('itemLocation', e.target.value)}
-                  className="w-full p-3 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
-                  placeholder="e.g., Shanghai, China"
-                />
+                <div className="flex space-x-2">
+                  <input
+                    type="text"
+                    value={settings.itemLocation.city || ''}
+                    onChange={(e) => handleSettingChange('itemLocation', { ...settings.itemLocation, city: e.target.value })}
+                    className="w-1/2 p-3 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
+                    placeholder="City (e.g., Shanghai)"
+                  />
+                  <input
+                    type="text"
+                    value={settings.itemLocation.region || ''}
+                    onChange={(e) => handleSettingChange('itemLocation', { ...settings.itemLocation, region: e.target.value })}
+                    className="w-1/2 p-3 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
+                    placeholder="Region (e.g., China)"
+                  />
+                </div>
               </div>
             </div>
 
