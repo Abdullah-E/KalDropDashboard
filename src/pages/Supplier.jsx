@@ -41,7 +41,8 @@ const Supplier = () => {
     itemLocation: defaultSettings.item_location,
     template: defaultSettings.template,
     itemSpecifics: defaultSettings.item_specifics,
-    promotedListingValue: defaultSettings.promotion_input,
+    promotedListing: defaultSettings.promotedListing,
+    promotedListingValue: defaultSettings.promotion_input
   });
 
   const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
@@ -50,9 +51,16 @@ const Supplier = () => {
     if (uploaderSettings) {
       const newSettings = Object.keys(defaultSettings).reduce((acc, key) => {
         const camelKey = key.replace(/_([a-z])/g, g => g[1].toUpperCase());
-        acc[camelKey] = key === 'item_location' ? { ...defaultSettings[key], ...uploaderSettings[key] } : uploaderSettings[key] || defaultSettings[key];
+        acc[camelKey] = key === 'item_location' 
+          ? { ...defaultSettings[key], ...uploaderSettings[key] } 
+          : uploaderSettings[key] || defaultSettings[key];
         return acc;
       }, {});
+      
+      // Handle promotion fields specifically
+      newSettings.promotedListing = uploaderSettings.promoted_listing || defaultSettings.promotedListing;
+      newSettings.promotedListingValue = uploaderSettings.promotion_input || defaultSettings.promotion_input;
+      
       setSettings(newSettings);
     }
   }, [uploaderSettings]);
@@ -116,9 +124,23 @@ const Supplier = () => {
 
   const handleSaveSettings = async () => {
     try {
-      const response = await putData('uploader-settings', {
-        ...settings,
-        item_location: settings.itemLocation,
+      // const response = await putData('uploader-settings', {
+      //   ...settings,
+      //   item_location: settings.itemLocation,
+      //   marketplace_region: settings.marketplaceRegion,
+      //   add_border_to_main_image: settings.addBorder,
+      //   upload_videos: settings.uploadVideo,
+      //   include_out_of_stock: settings.includeOutOfStock,
+      //   duplicate_max_photos: settings.duplicateMaxPhotos,
+      //   fixed_item_specifics: settings.fixedItemSpecifics,
+      //   header_image: settings.headerImage,
+      //   footer_image: settings.footerImage,
+      //   template: settings.template,
+      //   item_specifics: settings.itemSpecifics,
+      //   promotedListing: settings.promotedListing,
+      //   promotion_input: settings.promotedListingValue,
+      // });
+      const payload = {
         marketplace_region: settings.marketplaceRegion,
         add_border_to_main_image: settings.addBorder,
         upload_videos: settings.uploadVideo,
@@ -127,11 +149,13 @@ const Supplier = () => {
         fixed_item_specifics: settings.fixedItemSpecifics,
         header_image: settings.headerImage,
         footer_image: settings.footerImage,
+        item_location: settings.itemLocation,
         template: settings.template,
         item_specifics: settings.itemSpecifics,
-        promotedListing: settings.promotedListing,
-        promotion_input: settings.promotedListingValue,
-      });
+        promoted_listings: settings.promotedListing,
+        promotion_input: settings.promotedListingValue ? parseInt(settings.promotedListingValue) : null
+      };
+      const response = await putData('uploader-settings', payload);
       console.log('Settings saved:', response);
       showFeedback('Settings saved successfully!', 'success');
     } catch (error) {
@@ -173,6 +197,7 @@ const Supplier = () => {
       </motion.h1>
 
       <div className="space-y-6 max-w-4xl mx-auto">
+        {/* General Settings */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -228,6 +253,28 @@ const Supplier = () => {
                     </span>
                   </label>
                 ))}
+                {/* <div className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={settings.promotedListing}
+                      onChange={() => handleSettingChange('promotedListing', !settings.promotedListing)}
+                      className="w-5 h-5 rounded border-[#e5eaf3] text-[#4f6ed3] focus:ring-[#4f6ed3] transition-colors"
+                    />
+                  </div>
+                  <span className="text-[#2a4270] group-hover:text-[#4f6ed3] transition-colors">
+                    📝 Promoted Listing
+                  </span>
+                  {settings.promotedListing && (
+                    <input
+                      type="number"
+                      placeholder="15%"
+                      value={settings.promotedListingValue || ''}
+                      onChange={(e) => handleSettingChange('promotedListingValue', e.target.value)}
+                      className="ml-2 w-20 p-1 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
+                    />
+                  )}
+                </div> */}
                 <div className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
                   <div className="relative">
                     <input
@@ -247,6 +294,8 @@ const Supplier = () => {
                       value={settings.promotedListingValue || ''}
                       onChange={(e) => handleSettingChange('promotedListingValue', e.target.value)}
                       className="ml-2 w-20 p-1 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
+                      min="0"
+                      max="100"
                     />
                   )}
                 </div>
