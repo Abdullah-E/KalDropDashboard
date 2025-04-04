@@ -68,7 +68,7 @@ class CookieStorageAdapter {
   }
 }
 const storageAdapter = new CookieStorageAdapter({
-  domain: 'localhost',
+  // domain: 'vendraa-dashboard.vercel.app',
   secure: false,
   expiryDays: 1,
   path: '/',
