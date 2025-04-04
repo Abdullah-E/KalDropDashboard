@@ -29,131 +29,70 @@ const Supplier = () => {
     promotion_input: null
   };
 
-  const [settings, setSettings] = useState({
-    marketplaceRegion: defaultSettings.marketplace_region,
-    addBorder: defaultSettings.add_border_to_main_image,
-    uploadVideo: defaultSettings.upload_videos,
-    includeOutOfStock: defaultSettings.include_out_of_stock,
-    duplicateMaxPhotos: defaultSettings.duplicate_max_photos,
-    fixedItemSpecifics: defaultSettings.fixed_item_specifics,
-    headerImage: defaultSettings.header_image,
-    footerImage: defaultSettings.footer_image,
-    itemLocation: defaultSettings.item_location,
-    template: defaultSettings.template,
-    itemSpecifics: defaultSettings.item_specifics,
-    promotedListing: defaultSettings.promotedListing,
-    promotedListingValue: defaultSettings.promotion_input
-  });
-
+  const [settings, setSettings] = useState(defaultSettings);
   const [feedbackMessage, setFeedbackMessage] = useState({ text: '', type: '' });
 
   useEffect(() => {
     if (uploaderSettings) {
-      const newSettings = Object.keys(defaultSettings).reduce((acc, key) => {
-        const camelKey = key.replace(/_([a-z])/g, g => g[1].toUpperCase());
-        acc[camelKey] = key === 'item_location' 
-          ? { ...defaultSettings[key], ...uploaderSettings[key] } 
-          : uploaderSettings[key] || defaultSettings[key];
-        return acc;
-      }, {});
-      
-      // Handle promotion fields specifically
-      newSettings.promotedListing = uploaderSettings.promoted_listing || defaultSettings.promotedListing;
-      newSettings.promotedListingValue = uploaderSettings.promotion_input || defaultSettings.promotion_input;
-      
-      setSettings(newSettings);
+      const mergedSettings = {
+        ...defaultSettings,
+        ...uploaderSettings,
+        item_location: {
+          ...defaultSettings.item_location,
+          ...uploaderSettings.item_location
+        }
+      };
+      setSettings(mergedSettings);
     }
   }, [uploaderSettings]);
 
-  // Fallback to localStorage if backend data isn't available
-  useEffect(() => {
-    if (!uploaderSettings && !uploaderLoading) {
-      const savedSettings = localStorage.getItem('supplierSettings');
-      if (savedSettings) {
-        try {
-          const parsedSettings = JSON.parse(savedSettings);
-          setSettings(parsedSettings);
-        } catch (error) {
-          console.error('Error parsing saved settings:', error);
-        }
-      }
-    }
-  }, [uploaderSettings, uploaderLoading]);
-
   const handleSettingChange = (key, value) => {
-    setSettings(prev => {
-      const newSettings = { ...prev, [key]: value };
-      localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
-      return newSettings;
-    });
+    setSettings(prev => ({ ...prev, [key]: value }));
   };
 
   const handleItemSpecificChange = (index, key, value) => {
     setSettings(prev => {
-      const newSpecifics = [...prev.itemSpecifics];
+      const newSpecifics = [...prev.item_specifics];
       newSpecifics[index] = { [key]: value };
-      const newSettings = { ...prev, itemSpecifics: newSpecifics };
-      localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
-      return newSettings;
+      return { ...prev, item_specifics: newSpecifics };
     });
   };
 
   const handleAddSpecific = () => {
-    setSettings(prev => {
-      const newSpecifics = [...prev.itemSpecifics, { "": "" }];
-      const newSettings = { ...prev, itemSpecifics: newSpecifics };
-      localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
-      return newSettings;
-    });
+    setSettings(prev => ({
+      ...prev,
+      item_specifics: [...prev.item_specifics, { "": "" }]
+    }));
   };
 
   const handleRemoveSpecific = (index) => {
     setSettings(prev => {
-      const newSpecifics = [...prev.itemSpecifics];
+      const newSpecifics = [...prev.item_specifics];
       newSpecifics.splice(index, 1);
-      const newSettings = { ...prev, itemSpecifics: newSpecifics };
-      localStorage.setItem('supplierSettings', JSON.stringify(newSettings));
-      return newSettings;
+      return { ...prev, item_specifics: newSpecifics };
     });
   };
 
   const handlePreview = () => {
-    // Would be implemented for template preview functionality
     console.log("Preview template:", settings.template);
   };
 
   const handleSaveSettings = async () => {
     try {
-      // const response = await putData('uploader-settings', {
-      //   ...settings,
-      //   item_location: settings.itemLocation,
-      //   marketplace_region: settings.marketplaceRegion,
-      //   add_border_to_main_image: settings.addBorder,
-      //   upload_videos: settings.uploadVideo,
-      //   include_out_of_stock: settings.includeOutOfStock,
-      //   duplicate_max_photos: settings.duplicateMaxPhotos,
-      //   fixed_item_specifics: settings.fixedItemSpecifics,
-      //   header_image: settings.headerImage,
-      //   footer_image: settings.footerImage,
-      //   template: settings.template,
-      //   item_specifics: settings.itemSpecifics,
-      //   promotedListing: settings.promotedListing,
-      //   promotion_input: settings.promotedListingValue,
-      // });
       const payload = {
-        marketplace_region: settings.marketplaceRegion,
-        add_border_to_main_image: settings.addBorder,
-        upload_videos: settings.uploadVideo,
-        include_out_of_stock: settings.includeOutOfStock,
-        duplicate_max_photos: settings.duplicateMaxPhotos,
-        fixed_item_specifics: settings.fixedItemSpecifics,
-        header_image: settings.headerImage,
-        footer_image: settings.footerImage,
-        item_location: settings.itemLocation,
+        marketplace_region: settings.marketplace_region,
+        add_border_to_main_image: settings.add_border_to_main_image,
+        upload_videos: settings.upload_videos,
+        include_out_of_stock: settings.include_out_of_stock,
+        duplicate_max_photos: settings.duplicate_max_photos,
+        fixed_item_specifics: settings.fixed_item_specifics,
+        header_image: settings.header_image,
+        footer_image: settings.footer_image,
+        item_location: settings.item_location,
         template: settings.template,
-        item_specifics: settings.itemSpecifics,
+        item_specifics: settings.item_specifics,
         promoted_listings: settings.promotedListing,
-        promotion_input: settings.promotedListingValue ? parseInt(settings.promotedListingValue) : null
+        promotion_input: settings.promotion_input ? parseInt(settings.promotion_input) : null
       };
       const response = await putData('uploader-settings', payload);
       console.log('Settings saved:', response);
@@ -216,8 +155,8 @@ const Supplier = () => {
               <label className="block text-[#94a2be] font-medium mb-2">Marketplace Region</label>
               <select
                 className="w-full p-3 pl-4 pr-10 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors bg-white appearance-none"
-                value={settings.marketplaceRegion}
-                onChange={(e) => handleSettingChange('marketplaceRegion', e.target.value)}
+                value={settings.marketplace_region}
+                onChange={(e) => handleSettingChange('marketplace_region', e.target.value)}
               >
                 <option value="United States">United States</option>
                 <option value="United Kingdom">United Kingdom</option>
@@ -235,9 +174,9 @@ const Supplier = () => {
               <h3 className="text-[#2a4270] font-medium mb-4">Additional Options</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: 'uploadVideo', label: 'Upload Video', icon: '📹' },
-                  { key: 'fixedItemSpecifics', label: 'Fixed Item Specifics', icon: '📦' },
-                  { key: 'borderMainImage', label: 'Add Border to Main Image', icon: '🖼️' },
+                  { key: 'upload_videos', label: 'Upload Video', icon: '📹' },
+                  { key: 'fixed_item_specifics', label: 'Fixed Item Specifics', icon: '📦' },
+                  { key: 'add_border_to_main_image', label: 'Add Border to Main Image', icon: '🖼️' },
                 ].map(({ key, label, icon }) => (
                   <label key={key} className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
                     <div className="relative">
@@ -253,28 +192,6 @@ const Supplier = () => {
                     </span>
                   </label>
                 ))}
-                {/* <div className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
-                  <div className="relative">
-                    <input
-                      type="checkbox"
-                      checked={settings.promotedListing}
-                      onChange={() => handleSettingChange('promotedListing', !settings.promotedListing)}
-                      className="w-5 h-5 rounded border-[#e5eaf3] text-[#4f6ed3] focus:ring-[#4f6ed3] transition-colors"
-                    />
-                  </div>
-                  <span className="text-[#2a4270] group-hover:text-[#4f6ed3] transition-colors">
-                    📝 Promoted Listing
-                  </span>
-                  {settings.promotedListing && (
-                    <input
-                      type="number"
-                      placeholder="15%"
-                      value={settings.promotedListingValue || ''}
-                      onChange={(e) => handleSettingChange('promotedListingValue', e.target.value)}
-                      className="ml-2 w-20 p-1 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
-                    />
-                  )}
-                </div> */}
                 <div className="flex items-center p-3 space-x-3 rounded-lg hover:bg-[#f8faff] transition-colors cursor-pointer group">
                   <div className="relative">
                     <input
@@ -291,8 +208,8 @@ const Supplier = () => {
                     <input
                       type="number"
                       placeholder="15%"
-                      value={settings.promotedListingValue || ''}
-                      onChange={(e) => handleSettingChange('promotedListingValue', e.target.value)}
+                      value={settings.promotion_input || ''}
+                      onChange={(e) => handleSettingChange('promotion_input', e.target.value)}
                       className="ml-2 w-20 p-1 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
                       min="0"
                       max="100"
@@ -340,15 +257,15 @@ const Supplier = () => {
                 <div className="flex space-x-2">
                   <input
                     type="text"
-                    value={settings.itemLocation.city || ''}
-                    onChange={(e) => handleSettingChange('itemLocation', { ...settings.itemLocation, city: e.target.value })}
+                    value={settings.item_location.city || ''}
+                    onChange={(e) => handleSettingChange('item_location', { ...settings.item_location, city: e.target.value })}
                     className="w-1/2 p-3 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
                     placeholder="City (e.g., Shanghai)"
                   />
                   <input
                     type="text"
-                    value={settings.itemLocation.region || ''}
-                    onChange={(e) => handleSettingChange('itemLocation', { ...settings.itemLocation, region: e.target.value })}
+                    value={settings.item_location.region || ''}
+                    onChange={(e) => handleSettingChange('item_location', { ...settings.item_location, region: e.target.value })}
                     className="w-1/2 p-3 border border-[#e5eaf3] rounded-lg focus:ring-2 focus:ring-[#4f6ed3] hover:border-[#4f6ed3] transition-colors"
                     placeholder="Region (e.g., China)"
                   />
@@ -369,7 +286,7 @@ const Supplier = () => {
               </div>
 
               <div className="space-y-3">
-                {settings.itemSpecifics.map((specific, index) => (
+                {settings.item_specifics.map((specific, index) => (
                   <motion.div
                     key={index}
                     initial={{ opacity: 0, y: 20 }}
