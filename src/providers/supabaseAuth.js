@@ -10,7 +10,6 @@ if (!supabaseUrl || !supabaseAnonKey) {
 class CookieStorageAdapter {
   constructor(options = {}) {
     this.domain = options.domain || window.location.hostname;
-    console.log("domain:", this.domain);
     this.secure = options.secure || window.location.protocol === 'https:';
     this.path = options.path || '/';
     // Default to 12 hours if not specified
@@ -117,15 +116,15 @@ const signOut = async () => {
   }
 
 }
-export const signUpWithEmail = async (email, password, data) => {
+export const signUpWithEmail = async (email, password, metaData) => {
     const signupObj = {
       email,
       password,
       options: {
-          data,
+          data:metaData,
       }
   }
-  console.log("signupObj", signupObj);
+    console.log("signupObj", signupObj);
     const { data, error } = await supabase.auth.signUp(signupObj)
 
     
