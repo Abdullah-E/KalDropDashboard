@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer } from 'recharts';
 import { useGet } from '../api/useGet';
 import { useUser } from '../Components/ProtectedRoute';
+
 const Dashboard = () => {
+  const [userName, setUserName] = useState('');
   const revenueData = [
     { date: '2024-12-18', value: 10 },
     { date: '2024-12-19', value: 30 },
@@ -15,8 +17,14 @@ const Dashboard = () => {
   console.log('Products:', products);
   const productCount = Array.isArray(products) ? products.length : 0;
   const user = useUser();
-    const Name =  user.first_name;
-    console.log('User:', user);
+  
+  useEffect(() => {
+    // Only set the name when user data is available
+    if (user && user.first_name) {
+      setUserName(user.first_name);
+      console.log('User:', user);
+    }
+  }, [user]); // This effect runs whenever user changes
 
   return (
     <div className="flex-1 bg-gradient-to-br from-[#ffffff] to-[#eef2f9] min-h-screen p-8">
@@ -24,7 +32,9 @@ const Dashboard = () => {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold text-black mb-2">Dashboard</h1>
-        <p className="text-black text-lg">Hello {Name}!</p>
+        <p className="text-black text-lg">
+          {userName ? `Hello ${userName}!` : 'Welcome!'}
+        </p>
       </div>
 
       {/* Stats Grid */}
