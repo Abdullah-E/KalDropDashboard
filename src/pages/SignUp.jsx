@@ -29,7 +29,7 @@ const SignUp = () => {
         }
 
         try {
-            await signUpWithEmail(email, password, { first_name:firstName, last_name:lastName, country });
+            await signUpWithEmail(email, password, { first_name:firstName, last_name:lastName, email, country });
             navigate('/login');
         } catch (error) {
             console.error('Error signing up:', error.message);
