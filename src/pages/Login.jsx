@@ -20,7 +20,7 @@ const Login = () => {
 
         try {
             await loginWithEmail(email, password);
-            navigate('/'); // Redirect to dashboard after successful login
+            navigate('/');
         } catch (error) {
             console.error('Error logging in: Please Confirm Email! ', error.message);
             setError(error.message);

@@ -1,65 +1,69 @@
 import { getLoggedInUser, supabase } from "../providers/supabaseAuth";
 import React, { useState, useEffect } from "react";
+import { useUser } from "../Components/ProtectedRoute";
+import { usePut } from "../api/usePut";
 
 export default function Settings() {
-  const [user, setUser] = useState(null);
-  const [formData, setFormData] = useState({
-    full_name: "",
-    username: "",
-    email: "",
-    first_name: "",
-    last_name: "",
-    country: "",
-    created_at: "",
-  });
-  const [message, setMessage] = useState({ text: "", type: "" });
+	const user = useUser();
+	const { putData, loading:isUpdating, error:updateError } = usePut();
+	const [formData, setFormData] = useState({
+		email: "",
+		first_name: "",
+		last_name: "",
+		country: "",
+		created_at: "",
+	});
+	const [message, setMessage] = useState({ text: "", type: "" });
+	const [isLoading, setIsLoading] = useState(true);
+	useEffect(() => {
+		if (user) {
+			setFormData({
+			// full_name: currentUser.user_metadata?.full_name || "",
+				username: user.user_metadata?.username || "",
+				email: user.email || "",
+				first_name: user.first_name || "",
+				last_name: user.last_name || "",
+				country: user.country || "",
+				created_at: user.created_at
+				? new Date(user.created_at).toLocaleDateString()
+				: "",
+			});
+			setIsLoading(false);
+		}
+	}, [user]);
 
-  useEffect(() => {
-    const loadUserData = async () => {
-      const currentUser = await getLoggedInUser();
-      if (currentUser) {
-        setUser(currentUser);
-        const { data } = await supabase
-          .from("users")
-          .select("*")
-          .eq("id", currentUser.id)
-          .single();
-        setFormData({
-          full_name: currentUser.user_metadata?.full_name || "",
-          username: currentUser.user_metadata?.username || "",
-          email: currentUser.email || "",
-          first_name: data?.first_name || "",
-          last_name: data?.last_name || "",
-          country: data?.country || "",
-          created_at: data?.created_at
-            ? new Date(data.created_at).toLocaleDateString()
-            : "",
-        });
-      }
-    };
-    loadUserData();
-  }, []);
+	const handleChange = (e) => {
+		setFormData({ ...formData, [e.target.name]: e.target.value });
+	};
+	const handleSubmit = async (e) => {
+		e.preventDefault();
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+		// setIsLoading(true);
+		try {
+			const updateData = {
+				first_name: formData.first_name,
+				last_name: formData.last_name,
+				country: formData.country,
+			}
+			await putData('user', updateData);
+			setMessage({ text: "Profile updated successfully!", type: "success" });
+		} catch (error) {
+			setMessage({ text: error.message, type: "error" });
+		} finally {
+			setIsLoading(false);
+		}
+	};
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const { error } = await supabase.auth.updateUser({
-        data: {
-          full_name: formData.full_name,
-          username: formData.username,
-        },
-      });
-      if (error) throw error;
-      setMessage({ text: "Profile updated successfully!", type: "success" });
-    } catch (error) {
-      setMessage({ text: error.message, type: "error" });
-    }
-  };
-
+  if (isLoading) {
+    return (
+      <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
+        <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
+        <div className="flex justify-center items-center h-32">
+          Loading user data...
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="max-w-xl mx-auto mt-10 p-6 bg-white shadow-md rounded-lg">
       <h1 className="text-2xl font-bold mb-6">Account Settings</h1>
@@ -75,26 +79,6 @@ export default function Settings() {
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium">Full Name</label>
-          <input
-            type="text"
-            name="full_name"
-            value={formData.full_name}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-md"
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium">Username</label>
-          <input
-            type="text"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            className="w-full p-2 border rounded-md"
-          />
-        </div>
         <div>
           <label className="block text-sm font-medium">Email</label>
           <input
@@ -147,9 +131,12 @@ export default function Settings() {
         </div>
         <button
           type="submit"
-          className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+          disabled={isUpdating}
+          className={`w-full p-2 text-white rounded-md ${
+            isUpdating ? "bg-blue-400" : "bg-blue-500 hover:bg-blue-600"
+          }`}
         >
-          Save Changes
+          {isUpdating ? "Saving..." : "Save Changes"}
         </button>
       </form>
     </div>

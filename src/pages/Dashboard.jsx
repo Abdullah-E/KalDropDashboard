@@ -15,7 +15,7 @@ const Dashboard = () => {
   console.log('Products:', products);
   const productCount = Array.isArray(products) ? products.length : 0;
   const user = useUser();
-    const Name=  user?.user_metadata?.full_name;
+    const Name =  user.first_name;
     console.log('User:', user);
 
   return (
