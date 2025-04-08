@@ -2,6 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const frontendDomain = import.meta.env.VITE_FRONTEND_DOMAIN;
 
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing environment variables for Supabase configuration')
@@ -67,7 +68,7 @@ class CookieStorageAdapter {
   }
 }
 const storageAdapter = new CookieStorageAdapter({
-  domain: 'vendraa-dashboard.vercel.app',
+  domain: frontendDomain,
   secure: true,
   expiryDays: 1,
   path: '/',
