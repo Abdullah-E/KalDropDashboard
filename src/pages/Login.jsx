@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom'; // Added Link import
 import { loginWithEmail } from '../providers/supabaseAuth';
 import Vendra from '../assets/Vendra.png';
 import { motion } from 'framer-motion';
@@ -98,6 +98,19 @@ const Login = () => {
                         {isLoading ? 'Signing In...' : 'Sign In'}
                     </motion.button>
                 </form>
+                
+                {/* Added signup link with animation */}
+                <motion.p 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 0.3 }}
+                    className="mt-4 text-center text-sm text-gray-600"
+                >
+                    Don't have an account?{' '}
+                    <Link to="/signup" className="text-blue-600 hover:text-blue-700">
+                        Create account
+                    </Link>
+                </motion.p>
             </motion.div>
         </div>
     );
