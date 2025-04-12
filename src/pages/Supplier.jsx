@@ -25,7 +25,7 @@ const Supplier = () => {
       { Shipping: 'Free Shipping' },
       { Condition: 'New' }
     ],
-    promotedListing: false,
+    promoted_listings: false,
     promotion_input: null
   };
 
@@ -91,7 +91,7 @@ const Supplier = () => {
         item_location: settings.item_location,
         template: settings.template,
         item_specifics: settings.item_specifics,
-        promoted_listings: settings.promotedListing,
+        promoted_listings: settings.promoted_listings,
         promotion_input: settings.promotion_input ? parseInt(settings.promotion_input) : null
       };
       const response = await putData('uploader-settings', payload);
@@ -196,15 +196,15 @@ const Supplier = () => {
                   <div className="relative">
                     <input
                       type="checkbox"
-                      checked={settings.promotedListing}
-                      onChange={() => handleSettingChange('promotedListing', !settings.promotedListing)}
+                      checked={settings.promoted_listings}
+                      onChange={() => handleSettingChange('promoted_listings', !settings.promoted_listings)}
                       className="w-5 h-5 rounded border-[#e5eaf3] text-[#4f6ed3] focus:ring-[#4f6ed3] transition-colors"
                     />
                   </div>
                   <span className="text-[#2a4270] group-hover:text-[#4f6ed3] transition-colors">
                     📝 Promoted Listing
                   </span>
-                  {settings.promotedListing && (
+                  {settings.promoted_listings && (
                     <input
                       type="number"
                       placeholder="15%"
