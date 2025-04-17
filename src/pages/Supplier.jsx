@@ -40,14 +40,19 @@ const Supplier = () => {
         item_location: {
           ...defaultSettings.item_location,
           ...uploaderSettings.item_location
-        }
+        },
+        item_specifics: uploaderSettings.item_specifics || defaultSettings.item_specifics,
+        duplicate_max_photos: uploaderSettings.duplicate_max_photos ?? defaultSettings.duplicate_max_photos
       };
       setSettings(mergedSettings);
     }
   }, [uploaderSettings]);
 
   const handleSettingChange = (key, value) => {
-    setSettings(prev => ({ ...prev, [key]: value }));
+    setSettings(prev => ({
+      ...prev,
+      [key]: typeof value === 'boolean' ? value : value
+    }));
   };
 
   const handleItemSpecificChange = (index, key, value) => {
@@ -94,10 +99,17 @@ const Supplier = () => {
         promoted_listings: settings.promoted_listings,
         promotion_input: settings.promotion_input ? parseInt(settings.promotion_input) : null
       };
+
+      // Validate duplicate_max_photos
+      if (typeof payload.duplicate_max_photos !== 'boolean') {
+        throw new Error('Invalid value for duplicate_max_photos');
+      }
+
       const response = await putData('uploader-settings', payload);
       console.log('Settings saved:', response);
       showFeedback('Settings saved successfully!', 'success');
     } catch (error) {
+      console.error('Save settings error:', error);
       showFeedback(error.message || 'Failed to save settings', 'error');
     }
   };
@@ -174,7 +186,7 @@ const Supplier = () => {
               <h3 className="text-[#2a4270] font-medium mb-4">Additional Options</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {[
-                  { key: 'upload_videos', label: 'Upload Video', icon: '📹' },
+                  { key: 'duplicate_max_photos', label: 'Duplicate To Max Photos', icon: '📹' },
                   { key: 'fixed_item_specifics', label: 'Fixed Item Specifics', icon: '📦' },
                   { key: 'add_border_to_main_image', label: 'Add Border to Main Image', icon: '🖼️' },
                 ].map(({ key, label, icon }) => (
@@ -237,7 +249,7 @@ const Supplier = () => {
             </button>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y meticulous-mullet-58y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[#94a2be] font-medium mb-2">Template Style</label>
