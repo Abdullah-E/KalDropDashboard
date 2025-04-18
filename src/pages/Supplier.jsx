@@ -241,12 +241,7 @@ const Supplier = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold text-[#2a4270]">Template Settings</h2>
-            <button
-              onClick={() => handlePreview()}
-              className="px-4 py-2 text-[#4f6ed3] hover:bg-[#f8faff] rounded-lg transition-all duration-200"
-            >
-              Preview Template
-            </button>
+           
           </div>
 
           <div className="space-y meticulous-mullet-58y-6">
