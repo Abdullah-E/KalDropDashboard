@@ -20,11 +20,7 @@ const Supplier = () => {
     footer_image: '',
     item_location: { city: 'Shanghai', region: 'China' },
     template: 'template1',
-    item_specifics: [
-      { Brand: 'Unbranded' },
-      { Shipping: 'Free Shipping' },
-      { Condition: 'New' }
-    ],
+    item_specifics: [ { "": "" } ], // Initialize with one empty input pair
     promoted_listings: false,
     promotion_input: null
   };
@@ -41,7 +37,9 @@ const Supplier = () => {
           ...defaultSettings.item_location,
           ...uploaderSettings.item_location
         },
-        item_specifics: uploaderSettings.item_specifics || defaultSettings.item_specifics,
+        item_specifics: Array.isArray(uploaderSettings.item_specifics) && uploaderSettings.item_specifics.length > 0
+          ? uploaderSettings.item_specifics
+          : defaultSettings.item_specifics,
         duplicate_max_photos: uploaderSettings.duplicate_max_photos ?? defaultSettings.duplicate_max_photos
       };
       setSettings(mergedSettings);
@@ -100,7 +98,6 @@ const Supplier = () => {
         promotion_input: settings.promotion_input ? parseInt(settings.promotion_input) : null
       };
 
-      // Validate duplicate_max_photos
       if (typeof payload.duplicate_max_photos !== 'boolean') {
         throw new Error('Invalid value for duplicate_max_photos');
       }
@@ -241,10 +238,15 @@ const Supplier = () => {
         >
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-semibold text-[#2a4270]">Template Settings</h2>
-           
+            <button
+              onClick={() => handlePreview()}
+              className="px-4 py-2 text-[#4f6ed3] hover:bg-[#f8faff] rounded-lg transition-all duration-200"
+            >
+              Preview Template
+            </button>
           </div>
 
-          <div className="space-y meticulous-mullet-58y-6">
+          <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-[#94a2be] font-medium mb-2">Template Style</label>
